@@ -40,14 +40,21 @@ node('aml') {
        }
      }
      stage('docker push') {
-       user.push("${tag_prefix}-${BUILD_NUMBER}")
-       web.push("${tag_prefix}-${BUILD_NUMBER}")
-       user.push("${tag_prefix}")
-       web.push("${tag_prefix}")
-
-       if(env.BRANCH_NAME.equals("release")) {
-         user.push("latest")
-         web.push("latest")
+       if(tag_prefix.startsWith("PR") ||
+          tag_prefix.startsWith("wip")
+       ) 
+       {
+         echo "Skipping push"
+       } else {
+         user.push("${tag_prefix}-${BUILD_NUMBER}")
+         web.push("${tag_prefix}-${BUILD_NUMBER}")
+         user.push("${tag_prefix}")
+         web.push("${tag_prefix}")
+  
+         if(env.BRANCH_NAME.equals("release")) {
+           user.push("latest")
+           web.push("latest")
+         }
        }
      }
   }
